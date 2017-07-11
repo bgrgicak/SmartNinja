@@ -4,11 +4,20 @@
 <ul>
 {% for poruka in messages %}
     <li>
-        {{ poruka.key.id() }},
-        {{ poruka.message_text }},
-        {% if poruka.message_time != None  %}
-            {{ poruka.message_time }}
-        {% endif %}
+        <label>
+            {{ poruka.message_text }}
+        </label>
+        <p>
+            {% if poruka.message_time != None  %}
+                {{ poruka.message_time }}
+            {% endif %}
+        </p>
+        <a href="/messages/{{ poruka.key.id() }}/edit">
+            Edit
+        </a>
+        <a href="/messages/{{ poruka.key.id() }}/delete">
+            Delete
+        </a>
     </li>
 {% endfor %}
 </ul>

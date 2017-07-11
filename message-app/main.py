@@ -41,13 +41,41 @@ class MainHandler(BaseHandler):
         })
 class MessageHandler(BaseHandler):
     def get(self):
-        messages = Message().query().fetch()
+        messages = Message().query(Message.message_archived == False).fetch()
         return self.render_template("messages.html", params={
             "messages": messages
         })
+class EditHandler(BaseHandler):
+    def get(self, message_id):
+        message = Message().get_by_id(int(message_id))
+        return self.render_template("edit.html", params={
+            "message": message
+        })
+    def post(self, message_id):
+        message = Message.get_by_id(int(message_id))
+        message_text = self.request.get("message")
+        message.message_text = message_text
+        message.put()
+        return self.redirect_to("message-list")
 
+
+class DeleteHandler(BaseHandler):
+    def get(self, message_id):
+        message = Message().get_by_id(int(message_id))
+        return self.render_template("delete.html", params={
+            "message": message
+        })
+    def post(self, message_id):
+        message = Message.get_by_id(int(message_id))
+        #Message delete command
+        #message.key.delete()
+        message.message_archived = True
+        message.put()
+        return self.redirect_to("message-list")
 
 app = webapp2.WSGIApplication([
     webapp2.Route('/', MainHandler),
-    webapp2.Route('/messages', MessageHandler),
+    webapp2.Route('/messages', MessageHandler, name="message-list"),
+    webapp2.Route('/messages/<message_id:\d+>/edit',EditHandler),
+    webapp2.Route('/messages/<message_id:\d+>/delete', DeleteHandler)
 ], debug=True)
