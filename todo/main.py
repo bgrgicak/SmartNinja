@@ -3,6 +3,7 @@ import os
 import jinja2
 import webapp2
 from model import Todo
+from google.appengine.api import users
 
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir), autoescape=False)
@@ -37,9 +38,19 @@ class MainHandler(BaseHandler):
         todo.put()
         return self.print_template()
     def print_template(self):
+        user = users.get_current_user()
+        if user:
+            is_user = True
+            user_url = users.create_logout_url('/')
+        else:
+            is_user = False
+            user_url = users.create_login_url('/')
         tasks = Todo().query().fetch()
         params = {
-            "tasks": tasks
+            "tasks": tasks,
+            "user": user,
+            "is_user": is_user,
+            "user_url": user_url
         }
         return self.render_template("hello.html", params)
 

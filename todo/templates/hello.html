@@ -8,6 +8,20 @@
 </head>
 <body>
     <h1>Task list</h1>
+    <a href="{{ user_url }}">
+    {% if is_user %}
+        Logout
+    {% else %}
+        Login
+    {% endif %}
+    </a>
+    {% if is_user %}
+        {{ user }}
+        {{ user.email() }}
+        {{ user.nickname() }}
+    {% endif %}
+
+
     <form method="post">
         <input type="text" name="task" />
         <input type="submit" value="Add task"/>
